@@ -18,10 +18,8 @@ void selectionSort(vector<int>& a, int &cmp, int &swaps) {
                 minIdx = j;
             }
         }
-        if (minIdx != i) {
             swap(a[i], a[minIdx]);
             swaps++;
-        }
     }
 }
 

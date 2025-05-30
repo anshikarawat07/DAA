@@ -1,55 +1,65 @@
 #include <iostream>
 #include <vector>
+#include <limits>
 using namespace std;
 
-#define INF 1e9
+// Floyd-Warshall function
+void shortest_distance(vector<vector<int>>& matrix) {
+    int n = matrix.size();
 
-void floydWarshall(int V, vector<vector<int>>& graph) {
-    vector<vector<int>> dist = graph;
+    // Step 1: Replace -1 with "infinity" and 0 on diagonals
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (matrix[i][j] == -1) {
+                matrix[i][j] = 1e9;  // large number as "infinity"
+            }
+            if (i == j) matrix[i][j] = 0;
+        }
+    }
 
-    for (int k = 0; k < V; k++) {
-        for (int i = 0; i < V; i++) {
-            for (int j = 0; j < V; j++) {
-                if (dist[i][k] < INF && dist[k][j] < INF)
-                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+    // Step 2: Floyd-Warshall main logic
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = min(matrix[i][j],
+                                   matrix[i][k] + matrix[k][j]);
             }
         }
     }
 
-    for (int i = 0; i < V; i++) {
-        if (dist[i][i] < 0) {
-            cout << "Negative weight cycle detected.\n";
-            return;
+    // Step 3: Convert "infinity" back to -1
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (matrix[i][j] == 1e9) {
+                matrix[i][j] = -1;
+            }
         }
-    }
-
-    cout << "Shortest distance matrix:\n";
-    for (int i = 0; i < V; i++) {
-        for (int j = 0; j < V; j++) {
-            if (dist[i][j] == INF)
-                cout << "INF ";
-            else
-                cout << dist[i][j] << " ";
-        }
-        cout << "\n";
     }
 }
 
 int main() {
-    int V;
+    int n;
     cout << "Enter number of vertices: ";
-    cin >> V;
+    cin >> n;
 
-    vector<vector<int>> graph(V, vector<int>(V));
+    vector<vector<int>> matrix(n, vector<int>(n));
 
-    cout << "Enter the adjacency matrix (use 1000000000 for INF):\n";
-    for (int i = 0; i < V; i++) {
-        for (int j = 0; j < V; j++) {
-            cin >> graph[i][j];
+    cout << "Enter the adjacency matrix (use -1 for no edge):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> matrix[i][j];
         }
     }
 
-    floydWarshall(V, graph);
+    shortest_distance(matrix);
+
+    cout << "\nShortest distance matrix:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
 
     return 0;
 }
